@@ -1,4 +1,5 @@
 import * as Yup from 'yup'
+import Property from '../models/Property'
 
 class PropertyController {
   async store(request, response) {
@@ -13,7 +14,7 @@ class PropertyController {
       rooms: Yup.number().required(),
       parking_space: Yup.number().required(),
       bathrooms: Yup.number().required(),
-      description: Yup.string(),
+      description: Yup.string().max(500),
       contact: Yup.string().required(),
     })
 
@@ -23,7 +24,38 @@ class PropertyController {
       return response.status(400).json({ error: err.errors })
     }
 
-    return response.status(201).json({ message: 'ok' })
+    const { filename: path } = request.files
+    const {
+      name,
+      price,
+      category,
+      address,
+      town_house,
+      status,
+      dimensions,
+      rooms,
+      parking_space,
+      bathrooms,
+      description,
+      contact,
+    } = request.body
+
+    const property = await Property.create({
+      name,
+      price,
+      category,
+      address,
+      town_house,
+      status,
+      dimensions,
+      rooms,
+      parking_space,
+      bathrooms,
+      description,
+      contact,
+    })
+
+    return response.status(201).json(property)
   }
 }
 
