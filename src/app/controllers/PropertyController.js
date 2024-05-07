@@ -24,7 +24,7 @@ class PropertyController {
       return response.status(400).json({ error: err.errors })
     }
 
-    const { filename: path } = request.files
+    const { filename: path } = request.file
     const {
       name,
       price,
@@ -53,6 +53,7 @@ class PropertyController {
       bathrooms,
       description,
       contact,
+      path
     })
 
     return response.status(201).json(property)
