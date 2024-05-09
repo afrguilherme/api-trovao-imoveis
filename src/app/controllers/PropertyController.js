@@ -72,6 +72,12 @@ class PropertyController {
       return response.status(400).json(error)
     }
   }
+
+  async index(request, response) {
+    const properties = await Property.findAll()
+
+    return response.json(properties)
+  }
 }
 
 export default new PropertyController()
