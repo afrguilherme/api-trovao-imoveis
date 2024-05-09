@@ -11,6 +11,6 @@ const upload = multer(multerConfig)
 
 routes.post('/users', UserController.store)
 routes.post('/session', SessionController.store)
-routes.post('/properties', upload.single('file'), PropertyController.store)
+routes.post('/properties', upload.array('files', 10), PropertyController.store)
 
 export default routes

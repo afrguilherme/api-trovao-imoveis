@@ -62,6 +62,18 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      path1: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      path2: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      path3: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
