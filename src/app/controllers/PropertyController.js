@@ -76,6 +76,8 @@ class PropertyController {
   async index(request, response) {
     const properties = await Property.findAll()
 
+    console.log({ userId: request.userId })
+
     return response.json(properties)
   }
 }
