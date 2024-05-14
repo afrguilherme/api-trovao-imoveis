@@ -4,6 +4,8 @@ import multerConfig from './config/multer'
 import UserController from './app/controllers/UserController'
 import SessionController from './app/controllers/SessionController'
 import PropertyController from './app/controllers/PropertyController'
+import CategoryController from './app/controllers/CategoryController'
+
 import authMiddleware from './middlewares/auth'
 
 const routes = new Router()
@@ -14,6 +16,8 @@ routes.post('/users', UserController.store)
 routes.post('/session', SessionController.store)
 routes.post('/properties', upload.array('files', 10), PropertyController.store)
 routes.get('/properties', PropertyController.index)
+routes.post('/categories', CategoryController.store)
+routes.get('/categories', CategoryController.index)
 routes.use(authMiddleware) // Indica que as rotas abaixo desta linha utiliza a autenticação de token.
 
 export default routes
