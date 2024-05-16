@@ -1,5 +1,6 @@
 import * as Yup from 'yup'
 import Property from '../models/Property'
+import Category from '../models/Category'
 
 class PropertyController {
   async store(request, response) {
@@ -75,7 +76,15 @@ class PropertyController {
   }
 
   async index(request, response) {
-    const properties = await Property.findAll()
+    const properties = await Property.findAll({
+      include: [
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name'],
+        },
+      ],
+    })
 
     console.log({ userId: request.userId })
 
