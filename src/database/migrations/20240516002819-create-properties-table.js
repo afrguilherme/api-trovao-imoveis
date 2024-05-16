@@ -18,9 +18,15 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
-      category: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      category_id: {
+        type: Sequelize.INTEGER,
+        onUpdate: 'CASCADE', //Quando houver alterações no registro da coluna caregory_id alterar também na tabela de produtos.
+        onDelete: 'SET NULL',
+        allowNull: true,
+        references: {
+          model: 'categories',
+          key: 'id',
+        },
       },
       address: {
         type: Sequelize.STRING,

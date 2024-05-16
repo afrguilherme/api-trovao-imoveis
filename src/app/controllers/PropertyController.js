@@ -6,7 +6,7 @@ class PropertyController {
     const schema = Yup.object({
       name: Yup.string().required(),
       price: Yup.string(),
-      category: Yup.string().required(),
+      category_id: Yup.number().required(),
       address: Yup.string().required(),
       town_house: Yup.string(),
       status: Yup.string().required(),
@@ -26,6 +26,12 @@ class PropertyController {
 
     const { files } = request
 
+    if (!files || files.length < 4) {
+      return response
+        .status(400)
+        .json({ error: 'At least 4 files are required!' })
+    }
+
     // Atribuição de imagens a colunas diferentes de forma provisória.
     const path = files[0].filename
     const path1 = files[1].filename
@@ -35,7 +41,7 @@ class PropertyController {
     const {
       name,
       price,
-      category,
+      category_id,
       address,
       town_house,
       status,
@@ -51,7 +57,7 @@ class PropertyController {
       const property = await Property.create({
         name,
         price,
-        category,
+        category_id,
         address,
         town_house,
         status,

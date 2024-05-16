@@ -6,7 +6,6 @@ class Property extends Model {
       {
         name: Sequelize.STRING,
         price: Sequelize.INTEGER,
-        category: Sequelize.STRING,
         address: Sequelize.STRING,
         town_house: Sequelize.STRING,
         status: Sequelize.STRING,
@@ -49,6 +48,14 @@ class Property extends Model {
         sequelize,
       },
     )
+    return this
+  }
+
+  static associate(models) {
+    this.belongsTo(models.Category, {
+      foreignKey: 'category_id',
+      as: 'category',
+    })
   }
 }
 
