@@ -65,19 +65,7 @@ module.exports = {
         allowNull: true,
       },
       path: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      path1: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      path2: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      path3: {
-        type: Sequelize.STRING,
+        type: Sequelize.ARRAY(Sequelize.STRING),
         allowNull: false,
       },
       created_at: {
@@ -91,7 +79,7 @@ module.exports = {
     })
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable('properties')
   },
 }

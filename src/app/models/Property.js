@@ -16,31 +16,13 @@ class Property extends Model {
         description: Sequelize.STRING,
         contact: Sequelize.STRING,
         path: Sequelize.STRING,
-        path1: Sequelize.STRING,
-        path2: Sequelize.STRING,
-        path3: Sequelize.STRING,
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            return `http://localhost:3002/property-file/${this.path}`
-          },
-        },
-        url1: {
-          type: Sequelize.VIRTUAL,
-          get() {
-            return `http://localhost:3002/property-file/${this.path1}`
-          },
-        },
-        url2: {
-          type: Sequelize.VIRTUAL,
-          get() {
-            return `http://localhost:3002/property-file/${this.path2}`
-          },
-        },
-        url3: {
-          type: Sequelize.VIRTUAL,
-          get() {
-            return `http://localhost:3002/property-file/${this.path3}`
+            const result = this.path.map((file) => {
+              return `http://localhost:3002/property-file/${file}`
+            })
+            return result
           },
         },
       },

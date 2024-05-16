@@ -26,17 +26,15 @@ class PropertyController {
 
     const { files } = request
 
-    if (!files || files.length < 4) {
+    if (!files || files.length < 5) {
       return response
         .status(400)
         .json({ error: 'At least 4 files are required!' })
     }
 
-    // Atribuição de imagens a colunas diferentes de forma provisória.
-    const path = files[0].filename
-    const path1 = files[1].filename
-    const path2 = files[2].filename
-    const path3 = files[3].filename
+    const path = request.files.map((file) => {
+      return file.filename
+    })
 
     const {
       name,
@@ -67,10 +65,7 @@ class PropertyController {
         bathrooms,
         description,
         contact,
-        path,
-        path1,
-        path2,
-        path3,
+        path: `{${path}}`,
       })
 
       return response.status(201).json(property)
