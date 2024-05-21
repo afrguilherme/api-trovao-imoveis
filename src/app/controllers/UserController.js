@@ -9,6 +9,7 @@ class UserController {
       email: Yup.string().email().required(),
       password: Yup.string().min(6).required(),
       admin: Yup.boolean(),
+      operator: Yup.boolean(),
     })
 
     try {
@@ -17,7 +18,7 @@ class UserController {
       return response.status(400).json({ error: err.errors })
     }
 
-    const { name, email, password, admin } = request.body
+    const { name, email, password, admin, operator } = request.body
 
     const userExists = await User.findOne({
       where: {
@@ -37,6 +38,7 @@ class UserController {
       email,
       password,
       admin,
+      operator,
     })
 
     return response.status(201).json({

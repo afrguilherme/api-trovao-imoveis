@@ -27,6 +27,10 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
+      operator: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -38,7 +42,7 @@ module.exports = {
     })
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable('users')
   },
 }
