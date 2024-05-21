@@ -1,11 +1,20 @@
 import * as Yup from 'yup'
 import Category from '../models/Category'
+import User from '../models/User'
 
 class CategoryController {
   async store(request, response) {
     const schema = Yup.object({
       name: Yup.string().required(),
     })
+
+    // Validação de admin e operador para permissão de cadastro de categoria.
+    const { admin: isAdmin } = await User.findByPk(request.userId)
+    const { operator: isOperator } = await User.findByPk(request.userId)
+
+    if (!isAdmin && !isOperator) {
+      return response.status(401).json()
+    }
 
     try {
       schema.validateSync(request.body, { abortEarly: false })
