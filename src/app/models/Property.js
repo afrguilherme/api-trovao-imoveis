@@ -15,7 +15,7 @@ class Property extends Model {
         bathrooms: Sequelize.INTEGER,
         description: Sequelize.STRING,
         contact: Sequelize.STRING,
-        path: Sequelize.STRING,
+        path: Sequelize.ARRAY(Sequelize.STRING),
         url: {
           type: Sequelize.VIRTUAL,
           get() {

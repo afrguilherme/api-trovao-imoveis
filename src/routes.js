@@ -18,10 +18,10 @@ routes.get('/properties', PropertyController.index)
 routes.get('/categories', CategoryController.index)
 routes.use(authMiddleware) // Indica que as rotas abaixo desta linha utiliza a autenticação de token.
 routes.post('/properties', upload.array('files', 10), PropertyController.store)
-// routes.put(
-//   '/properties/:id',
-//   upload.array('files', 10),
-//   PropertyController.update,
-// )
+routes.put(
+  '/properties/:id',
+  upload.array('files', 10),
+  PropertyController.update,
+)
 routes.post('/categories', CategoryController.store)
 export default routes
