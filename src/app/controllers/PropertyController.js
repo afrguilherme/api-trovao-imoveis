@@ -41,9 +41,7 @@ class PropertyController {
         .json({ error: 'At least 5 files are required!' })
     }
 
-    const path = request.files.map((file) => {
-      return file.filename
-    })
+    const path = request.files.map((file) => file.filename)
 
     const {
       name,
@@ -74,7 +72,7 @@ class PropertyController {
         bathrooms,
         description,
         contact,
-        path: `{${path}}`,
+        path,
       })
 
       return response.status(201).json(property)
@@ -124,15 +122,15 @@ class PropertyController {
 
     let path = request.files.map((file) => file.filename)
 
-    // if (request.files && request.files.length >= 5) {
-    //   path = request.files.map((file) => {
-    //     return file.filename
-    //   })
-    // } else {
-    //   return response
-    //     .status(400)
-    //     .json({ error: 'At least 5 files are required!' })
-    // }
+    if (request.files && request.files.length >= 5) {
+      path = request.files.map((file) => {
+        return file.filename
+      })
+    } else {
+      return response
+        .status(400)
+        .json({ error: 'At least 5 files are required!' })
+    }
 
     const {
       name,
