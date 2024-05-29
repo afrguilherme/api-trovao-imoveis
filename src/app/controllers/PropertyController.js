@@ -1,7 +1,10 @@
+import fs from 'fs/promises'
+const path = require('path')
 import * as Yup from 'yup'
 import Property from '../models/Property'
 import Category from '../models/Category'
 import User from '../models/User'
+import { log } from 'console'
 
 class PropertyController {
   async store(request, response) {
@@ -35,7 +38,7 @@ class PropertyController {
 
     const { files } = request
 
-    if (!files || files.length <= 5) {
+    if (!files || files.length < 5) {
       return response
         .status(400)
         .json({ error: 'At least 5 files are required!' })
@@ -114,67 +117,117 @@ class PropertyController {
 
     const findProperty = await Property.findByPk(id)
 
-    if (!findProperty) {
-      return response
-        .status(400)
-        .json({ error: 'Make sure your product ID is correct!' })
-    }
+    if (request.files) {
+      const uploadsPath = path.resolve('./uploads')
 
-    let path = request.files.map((file) => file.filename)
+      try {
+        const files = await fs.readdir(uploadsPath)
 
-    if (request.files && request.files.length >= 5) {
-      path = request.files.map((file) => {
-        return file.filename
-      })
+        const propertyImg = findProperty.path.map((img) => {
+          return img
+        })
+
+        // Não está retornando o matchingImages, acredito que não esteja executando corretamente os métodos filter e includes.
+        const matchingImages = propertyImg.filter((img) => files.includes(img))
+        console.log('Matching images:', matchingImages)
+
+        return response.status(200).json({ matchingImages })
+      } catch (err) {
+        return response.status(500).json({ error: `${err}` })
+      }
     } else {
       return response
         .status(400)
         .json({ error: 'At least 5 files are required!' })
     }
 
-    const {
-      name,
-      price,
-      category_id,
-      address,
-      town_house,
-      status,
-      dimensions,
-      rooms,
-      parking_space,
-      bathrooms,
-      description,
-      contact,
-    } = request.body
+    // if (!findProperty) {
+    //   return response
+    //     .status(400)
+    //     .json({ error: 'Make sure the property ID is correct!' })
+    // }
 
-    try {
-      Property.update(
-        {
-          name,
-          price,
-          category_id,
-          address,
-          town_house,
-          status,
-          dimensions,
-          rooms,
-          parking_space,
-          bathrooms,
-          description,
-          contact,
-          path,
-        },
-        {
-          where: {
-            id,
-          },
-        },
-      )
+    // async function deleteOldPaths() {
+    //   if (findProperty.path && findProperty.path.length >= 5) {
+    //     await findProperty.path.forEach((filePath) => {
+    //       const fullPath = path.resolve(
+    //         __dirname,
+    //         '..',
+    //         '..',
+    //         'uploads',
+    //         filePath,
+    //       )
+    //       fs.unlink(fullPath, (err) => {
+    //         if (err) console.error(`Error deleting file: ${filePath}`, err)
+    //       })
+    //     })
+    //   }
+    // }
+    // deleteOldPaths()
 
-      return response.status(200).json()
-    } catch (error) {
-      return response.status(400).json(error)
-    }
+    // let newPaths = request.files.map((file) => file.filename)
+
+    // if (!newPaths || newPaths.length < 5) {
+    //   return response
+    //     .status(400)
+    //     .json({ error: 'At least 5 files are required!' })
+    // }
+
+    // let path = request.files.map((file) => file.filename)
+
+    // if (request.files && request.files.length >= 5) {
+    //   path = request.files.map((file) => {
+    //     return file.filename
+    //   })
+    // } else {
+    //   return response
+    //     .status(400)
+    //     .json({ error: 'At least 5 files are required!' })
+    // }
+
+    // const {
+    //   name,
+    //   price,
+    //   category_id,
+    //   address,
+    //   town_house,
+    //   status,
+    //   dimensions,
+    //   rooms,
+    //   parking_space,
+    //   bathrooms,
+    //   description,
+    //   contact,
+    // } = request.body
+
+    // try {
+    //   Property.update(
+    //     {
+    //       name,
+    //       price,
+    //       category_id,
+    //       address,
+    //       town_house,
+    //       status,
+    //       dimensions,
+    //       rooms,
+    //       parking_space,
+    //       bathrooms,
+    //       description,
+    //       contact,
+    //       path: newPaths,
+    //     },
+    //     {
+    //       where: {
+    //         id,
+    //       },
+    //     },
+    //   )
+
+    //   return response.status(200).json()
+    // } catch (error) {
+    //   return response.status(400).json(error)
+    // }
   }
 
   async index(request, response) {
