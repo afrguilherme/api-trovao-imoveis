@@ -38,7 +38,7 @@ class PropertyController {
 
     const { files } = request
 
-    if (!files || files.length < 5) {
+    if (!files || files.length < 5 || files.length > 10) {
       return response
         .status(400)
         .json({ error: 'At least 5 files are required!' })
@@ -117,7 +117,9 @@ class PropertyController {
 
     const findProperty = await Property.findByPk(id)
 
-    if (request.files) {
+    let filePaths = request.files.map((file) => file.filename)
+
+    if (request.files.length >= 5 && request.files.length <= 10) {
       const uploadsPath = path.resolve('./uploads')
 
       try {
@@ -128,105 +130,64 @@ class PropertyController {
         })
 
         const matchingImages = propertyImg.filter((img) => files.includes(img))
-        console.log('Matching images:', matchingImages)
 
-        return response.status(200).json({ matchingImages })
+        if (matchingImages) {
+          for (let img of matchingImages) {
+            fs.unlink(path.join(uploadsPath, img), (err) => {
+              if (err) throw err
+            })
+          }
+        }
+
+        const {
+          name,
+          price,
+          category_id,
+          address,
+          town_house,
+          status,
+          dimensions,
+          rooms,
+          parking_space,
+          bathrooms,
+          description,
+          contact,
+        } = request.body
+
+        Property.update(
+          {
+            name,
+            price,
+            category_id,
+            address,
+            town_house,
+            status,
+            dimensions,
+            rooms,
+            parking_space,
+            bathrooms,
+            description,
+            contact,
+            path: filePaths,
+          },
+          {
+            where: {
+              id,
+            },
+          },
+        )
+
+        return response
+          .status(200)
+          .json({ message: 'Dados do imóvel editados com sucesso!' })
       } catch (err) {
         return response.status(500).json({ error: `${err}` })
       }
     } else {
       return response
         .status(400)
-        .json({ error: 'At least 5 files are required!' })
+        .json({ error: 'Between 5 and 10 images are required!' })
     }
-
-    // if (!findProperty) {
-    //   return response
-    //     .status(400)
-    //     .json({ error: 'Make sure the property ID is correct!' })
-    // }
-
-    // async function deleteOldPaths() {
-    //   if (findProperty.path && findProperty.path.length >= 5) {
-    //     await findProperty.path.forEach((filePath) => {
-    //       const fullPath = path.resolve(
-    //         __dirname,
-    //         '..',
-    //         '..',
-    //         'uploads',
-    //         filePath,
-    //       )
-    //       fs.unlink(fullPath, (err) => {
-    //         if (err) console.error(`Error deleting file: ${filePath}`, err)
-    //       })
-    //     })
-    //   }
-    // }
-    // deleteOldPaths()
-
-    // let newPaths = request.files.map((file) => file.filename)
-
-    // if (!newPaths || newPaths.length < 5) {
-    //   return response
-    //     .status(400)
-    //     .json({ error: 'At least 5 files are required!' })
-    // }
-
-    // let path = request.files.map((file) => file.filename)
-
-    // if (request.files && request.files.length >= 5) {
-    //   path = request.files.map((file) => {
-    //     return file.filename
-    //   })
-    // } else {
-    //   return response
-    //     .status(400)
-    //     .json({ error: 'At least 5 files are required!' })
-    // }
-
-    // const {
-    //   name,
-    //   price,
-    //   category_id,
-    //   address,
-    //   town_house,
-    //   status,
-    //   dimensions,
-    //   rooms,
-    //   parking_space,
-    //   bathrooms,
-    //   description,
-    //   contact,
-    // } = request.body
-
-    // try {
-    //   Property.update(
-    //     {
-    //       name,
-    //       price,
-    //       category_id,
-    //       address,
-    //       town_house,
-    //       status,
-    //       dimensions,
-    //       rooms,
-    //       parking_space,
-    //       bathrooms,
-    //       description,
-    //       contact,
-    //       path: newPaths,
-    //     },
-    //     {
-    //       where: {
-    //         id,
-    //       },
-    //     },
-    //   )
-
-    //   return response.status(200).json()
-    // } catch (error) {
-    //   return response.status(400).json(error)
-    // }
   }
 
   async index(request, response) {
