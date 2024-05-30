@@ -127,7 +127,6 @@ class PropertyController {
           return img
         })
 
-        // Não está retornando o matchingImages, acredito que não esteja executando corretamente os métodos filter e includes.
         const matchingImages = propertyImg.filter((img) => files.includes(img))
         console.log('Matching images:', matchingImages)
 
