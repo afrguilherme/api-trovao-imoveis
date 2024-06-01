@@ -4,7 +4,6 @@ import * as Yup from 'yup'
 import Property from '../models/Property'
 import Category from '../models/Category'
 import User from '../models/User'
-import { log } from 'console'
 
 class PropertyController {
   async store(request, response) {
@@ -41,7 +40,7 @@ class PropertyController {
     if (!files || files.length < 5 || files.length > 10) {
       return response
         .status(400)
-        .json({ error: 'At least 5 files are required!' })
+        .json({ error: 'Between 5 and 10 images are required!' })
     }
 
     const path = request.files.map((file) => file.filename)
@@ -117,76 +116,73 @@ class PropertyController {
 
     const findProperty = await Property.findByPk(id)
 
-    let filePaths = request.files.map((file) => file.filename)
+    const {
+      name,
+      price,
+      category_id,
+      address,
+      town_house,
+      status,
+      dimensions,
+      rooms,
+      parking_space,
+      bathrooms,
+      description,
+      contact,
+    } = request.body
 
-    if (request.files.length >= 5 && request.files.length <= 10) {
+    const updateData = {
+      name,
+      price,
+      category_id,
+      address,
+      town_house,
+      status,
+      dimensions,
+      rooms,
+      parking_space,
+      bathrooms,
+      description,
+      contact,
+    }
+
+    if (request.files) {
+      if (request.files.length < 5 || request.files.length > 10) {
+        return response
+          .status(400)
+          .json({ error: 'Between 5 and 10 images are required!' })
+      }
+
+      let filePaths = request.files.map((file) => file.filename)
       const uploadsPath = path.resolve('./uploads')
 
       try {
         const files = await fs.readdir(uploadsPath)
-
-        const propertyImg = findProperty.path.map((img) => {
-          return img
-        })
-
+        const propertyImg = findProperty.path.map((img) => img)
         const matchingImages = propertyImg.filter((img) => files.includes(img))
 
-        if (matchingImages) {
+        if (matchingImages.length > 0) {
           for (let img of matchingImages) {
-            fs.unlink(path.join(uploadsPath, img), (err) => {
-              if (err) throw err
-            })
+            await fs.unlink(path.join(uploadsPath, img))
           }
         }
 
-        const {
-          name,
-          price,
-          category_id,
-          address,
-          town_house,
-          status,
-          dimensions,
-          rooms,
-          parking_space,
-          bathrooms,
-          description,
-          contact,
-        } = request.body
-
-        Property.update(
-          {
-            name,
-            price,
-            category_id,
-            address,
-            town_house,
-            status,
-            dimensions,
-            rooms,
-            parking_space,
-            bathrooms,
-            description,
-            contact,
-            path: filePaths,
-          },
-          {
-            where: {
-              id,
-            },
-          },
-        )
-
-        return response
-          .status(200)
-          .json({ message: 'Dados do imóvel editados com sucesso!' })
+        updateData.path = filePaths
       } catch (err) {
         return response.status(500).json({ error: `${err}` })
       }
-    } else {
+    }
+
+    try {
+      await Property.update(updateData, {
+        where: { id },
+      })
+
       return response
-        .status(400)
-        .json({ error: 'Between 5 and 10 images are required!' })
+        .status(200)
+        .json({ message: 'Property data updated successfully!' })
+    } catch (err) {
+      return response.status(500).json({ error: `${err}` })
     }
   }
 
