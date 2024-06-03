@@ -3,7 +3,8 @@ const path = require('path')
 import * as Yup from 'yup'
 import Property from '../models/Property'
 import Category from '../models/Category'
-import User from '../models/User'
+
+import { isAdminOrOperator } from '../../config/accesAuth'
 
 class PropertyController {
   async store(request, response) {
@@ -22,10 +23,7 @@ class PropertyController {
       contact: Yup.string().required(),
     })
 
-    const { admin: isAdmin } = await User.findByPk(request.userId)
-    const { operator: isOperator } = await User.findByPk(request.userId)
-
-    if (!isAdmin && !isOperator) {
+    if (!(await isAdminOrOperator(request.userId))) {
       return response.status(401).json()
     }
 
@@ -99,10 +97,7 @@ class PropertyController {
       contact: Yup.string(),
     })
 
-    const { admin: isAdmin } = await User.findByPk(request.userId)
-    const { operator: isOperator } = await User.findByPk(request.userId)
-
-    if (!isAdmin && !isOperator) {
+    if (!(await isAdminOrOperator(request.userId))) {
       return response.status(401).json()
     }
 
