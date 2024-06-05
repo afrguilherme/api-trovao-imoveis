@@ -111,6 +111,10 @@ class PropertyController {
 
     const findProperty = await Property.findByPk(id)
 
+    if (!findProperty) {
+      return response.status(404).json({ error: 'Property not found!' })
+    }
+
     const {
       name,
       price,
