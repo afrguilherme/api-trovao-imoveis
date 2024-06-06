@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 import Property from '../models/Property'
 import Category from '../models/Category'
 
-import { isAdminOrOperator } from '../../config/accesAuth'
+import { isAdminOrOperator } from '../../middlewares/accesAuth'
 
 class PropertyController {
   async store(request, response) {
@@ -41,7 +41,7 @@ class PropertyController {
         .json({ error: 'Between 5 and 10 images are required!' })
     }
 
-    const path = request.files.map((file) => file.filename)
+    const paths = request.files.map((file) => file.filename)
 
     const {
       name,
@@ -72,7 +72,7 @@ class PropertyController {
         bathrooms,
         description,
         contact,
-        path,
+        path: paths,
       })
 
       return response.status(201).json(property)
