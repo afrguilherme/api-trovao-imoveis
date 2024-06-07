@@ -1,7 +1,27 @@
 import multer from 'multer'
 import { v4 } from 'uuid'
-
 import { extname, resolve } from 'node:path'
+
+import User from '../app/models/User'
+
+const accessAuth = async (userId, callback) => {
+  try {
+    const user = await User.findByPk(userId)
+
+    if (!user) {
+      return callback(new Error('User not found!'), false)
+    }
+
+    const { admin: isAdmin, operator: isOperator } = user
+
+    if (!isAdmin && !isOperator) {
+      return callback(new Error('Unauthorized!'), false)
+    }
+    return callback(null, true)
+  } catch (error) {
+    return callback(new Error('Error during authorization!'), false)
+  }
+}
 
 export default {
   storage: multer.diskStorage({
@@ -10,8 +30,13 @@ export default {
       callback(null, v4() + extname(file.originalname)),
   }),
 
-  // No caso dos arquivos passarem na validação não está prosseguindo com a requisição.
   fileFilter: (request, file, callback) => {
+    accessAuth(request.userId, (authError, authResult) => {
+      if (authError) {
+        return callback(authError, false)
+      }
+    })
+
     const allowedMimes = [
       'image/jpeg',
       'image/pjpeg',
