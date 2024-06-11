@@ -11,6 +11,7 @@ import {
   validateImageCount,
   handleMulterError,
 } from './middlewares/handleMulterErrors'
+import { checkPropertyExists } from './middlewares/checkPropertyExists'
 
 const routes = new Router()
 
@@ -32,6 +33,7 @@ routes.post(
 
 routes.put(
   '/properties/:id',
+  checkPropertyExists,
   upload.array('files', 10),
   validateImageCount,
   handleMulterError,

@@ -3,11 +3,14 @@ import fs from 'fs/promises'
 import multer from 'multer'
 
 export const validateImageCount = async (request, response, next) => {
-  if (
-    request.files &&
-    (request.files.length < 5 || request.files.length > 10)
-  ) {
-    const paths = request.files.map((file) => file.filename)
+  const { files } = request
+
+  if (!files || files.length === 0) {
+    return next()
+  }
+
+  if (files.length < 5 || files.length > 10) {
+    const paths = files.map((file) => file.filename)
 
     await Promise.all(
       paths.map(async (file) => {

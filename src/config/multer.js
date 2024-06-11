@@ -3,6 +3,7 @@ import { v4 } from 'uuid'
 import { extname, resolve } from 'node:path'
 
 import User from '../app/models/User'
+import Property from '../app/models/Property'
 
 const accessAuth = async (userId, callback) => {
   try {
@@ -30,12 +31,22 @@ export default {
       callback(null, v4() + extname(file.originalname)),
   }),
 
-  fileFilter: (request, file, callback) => {
+  fileFilter: async (request, file, callback) => {
     accessAuth(request.userId, (authError, authResult) => {
       if (authError) {
         return callback(authError, false)
       }
     })
+
+    const { id } = request.params
+
+    if (id) {
+      const property = await Property.findByPk(id)
+
+      if (!property) {
+        return callback(new Error('property not found!'))
+      }
+    }
 
     const allowedMimes = [
       'image/jpeg',

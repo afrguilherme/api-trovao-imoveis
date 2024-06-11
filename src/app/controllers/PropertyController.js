@@ -145,31 +145,23 @@ class PropertyController {
       contact,
     }
 
-    if (request.files) {
-      if (request.files.length < 5 || request.files.length > 10) {
-        return response
-          .status(400)
-          .json({ error: 'Between 5 and 10 images are required!' })
-      }
+    let filePaths = request.files.map((file) => file.filename)
+    const uploadsPath = path.resolve('./uploads')
 
-      let filePaths = request.files.map((file) => file.filename)
-      const uploadsPath = path.resolve('./uploads')
+    try {
+      const files = await fs.readdir(uploadsPath)
+      const propertyImg = findProperty.path.map((img) => img)
+      const matchingImages = propertyImg.filter((img) => files.includes(img))
 
-      try {
-        const files = await fs.readdir(uploadsPath)
-        const propertyImg = findProperty.path.map((img) => img)
-        const matchingImages = propertyImg.filter((img) => files.includes(img))
-
-        if (matchingImages.length > 0) {
-          for (let img of matchingImages) {
-            await fs.unlink(path.join(uploadsPath, img))
-          }
+      if (matchingImages.length > 0) {
+        for (let img of matchingImages) {
+          await fs.unlink(path.join(uploadsPath, img))
         }
-
-        updateData.path = filePaths
-      } catch (err) {
-        return response.status(500).json({ error: `${err}` })
       }
+
+      updateData.path = filePaths
+    } catch (err) {
+      return response.status(500).json({ error: `${err}` })
     }
 
     try {
