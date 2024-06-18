@@ -47,6 +47,66 @@ class CategoryController {
     }
   }
 
+  async update(request, response) {
+    const schema = Yup.object({
+      name: Yup.string().required(),
+    })
+
+    // Validação de admin e operador para permissão de cadastro de categoria.
+    const { admin: isAdmin } = await User.findByPk(request.userId)
+    const { operator: isOperator } = await User.findByPk(request.userId)
+
+    if (!isAdmin && !isOperator) {
+      return response.status(401).json()
+    }
+
+    try {
+      schema.validateSync(request.body, { abortEarly: false })
+    } catch (err) {
+      return response.status(400).json({ error: err.errors })
+    }
+
+    const { name } = request.body
+    const { id } = request.params
+
+    const categoryExists = await Category.findByPk(id)
+
+    if (!categoryExists) {
+      return response
+        .status(404)
+        .json({ message: 'Make sure your category id is correct!' })
+    }
+
+    if (name) {
+      const categoryNameExists = await Category.findOne({
+        where: {
+          name,
+        },
+      })
+
+      // Condição para não permitir alterar o nome da categoria pelo nome de outra categoria já existente.
+      if (categoryNameExists && categoryNameExists.id !== id) {
+        return response.status(400).json({ error: 'Category already exists!' })
+      }
+    }
+
+    await Category.update(
+      {
+        name,
+      },
+      {
+        where: {
+          id,
+        },
+      },
+    )
+
+    return response.status(200).json()
+  }
+  catch(error) {
+    return response.status(400).json({ error: 'Failed to update category...' })
+  }
+
   async index(request, response) {
     const categories = await Category.findAll()
 
