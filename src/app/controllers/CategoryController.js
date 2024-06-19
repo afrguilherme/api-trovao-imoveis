@@ -107,6 +107,39 @@ class CategoryController {
     return response.status(400).json({ error: 'Failed to update category...' })
   }
 
+  async delete(request, response) {
+    const { admin: isAdmin } = await User.findByPk(request.userId)
+    const { operator: isOperator } = await User.findByPk(request.userId)
+
+    if (!isAdmin && !isOperator) {
+      return response.status(401).json()
+    }
+
+    const { id } = request.params
+
+    const categoryExists = await Category.findByPk(id)
+
+    if (!categoryExists) {
+      return response.status(404).json({ error: 'Category not found!' })
+    }
+
+    try {
+      await Category.destroy({
+        where: {
+          id,
+        },
+      })
+
+      return response
+        .status(200)
+        .json({ message: 'Category deleted successfully!' })
+    } catch (error) {
+      return response
+        .status(400)
+        .json({ error: 'Failed to delete category...' })
+    }
+  }
+
   async index(request, response) {
     const categories = await Category.findAll()
 

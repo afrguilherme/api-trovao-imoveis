@@ -177,6 +177,52 @@ class PropertyController {
     }
   }
 
+  async delete(request, response) {
+    if (!(await isAdminOrOperator(request.userId))) {
+      return response.status(401).json()
+    }
+
+    const { id } = request.params
+
+    const findProperty = await Property.findByPk(id)
+
+    if (!findProperty) {
+      return response.status(404).json({ error: 'Property not found!' })
+    }
+
+    const uploadsPath = path.resolve('./uploads')
+
+    try {
+      const files = await fs.readdir(uploadsPath)
+      const propertyImg = findProperty.path.map((img) => img)
+      const matchingImages = propertyImg.filter((img) => files.includes(img))
+
+      if (matchingImages.length > 0) {
+        for (let img of matchingImages) {
+          await fs.unlink(path.join(uploadsPath, img))
+        }
+      }
+    } catch (err) {
+      return response.status(500).json({ error: `${err}` })
+    }
+
+    try {
+      await Property.destroy({
+        where: {
+          id,
+        },
+      })
+
+      return response
+        .status(200)
+        .json({ message: 'Property deleted successfully!' })
+    } catch (error) {
+      return response
+        .status(400)
+        .json({ error: 'Failed to delete property...' })
+    }
+  }
+
   async index(request, response) {
     const properties = await Property.findAll({
       include: [
