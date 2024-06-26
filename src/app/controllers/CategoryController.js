@@ -1,6 +1,7 @@
 import * as Yup from 'yup'
 import Category from '../models/Category'
 import User from '../models/User'
+import { isAdminOrOperator } from '../../middlewares/accesAuth'
 
 class CategoryController {
   async store(request, response) {
@@ -8,11 +9,7 @@ class CategoryController {
       name: Yup.string().required(),
     })
 
-    // Validação de admin e operador para permissão de cadastro de categoria.
-    const { admin: isAdmin } = await User.findByPk(request.userId)
-    const { operator: isOperator } = await User.findByPk(request.userId)
-
-    if (!isAdmin && !isOperator) {
+    if (!(await isAdminOrOperator(request.userId))) {
       return response.status(401).json()
     }
 
@@ -52,11 +49,7 @@ class CategoryController {
       name: Yup.string().required(),
     })
 
-    // Validação de admin e operador para permissão de cadastro de categoria.
-    const { admin: isAdmin } = await User.findByPk(request.userId)
-    const { operator: isOperator } = await User.findByPk(request.userId)
-
-    if (!isAdmin && !isOperator) {
+    if (!(await isAdminOrOperator(request.userId))) {
       return response.status(401).json()
     }
 
@@ -108,10 +101,7 @@ class CategoryController {
   }
 
   async delete(request, response) {
-    const { admin: isAdmin } = await User.findByPk(request.userId)
-    const { operator: isOperator } = await User.findByPk(request.userId)
-
-    if (!isAdmin && !isOperator) {
+    if (!(await isAdminOrOperator(request.userId))) {
       return response.status(401).json()
     }
 

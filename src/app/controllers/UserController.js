@@ -1,6 +1,8 @@
 import { v4 } from 'uuid'
 import * as Yup from 'yup'
 
+import { isAdminOrOperator } from '../../middlewares/accesAuth'
+
 import User from '../models/User'
 class UserController {
   async store(request, response) {
@@ -46,6 +48,28 @@ class UserController {
       name: user.name,
       email: user.email,
     })
+  }
+
+  async index(request, response) {
+    try {
+      if (!(await isAdminOrOperator(request.userId))) {
+        return response.status(401).json()
+      }
+
+      const users = await User.findAll()
+
+      const allUsers = users.map((user) => {
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        }
+      })
+
+      return response.status(200).json(allUsers)
+    } catch (err) {
+      return response.status(400).json(err)
+    }
   }
 }
 
