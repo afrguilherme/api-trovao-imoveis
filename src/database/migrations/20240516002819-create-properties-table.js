@@ -32,6 +32,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      neighborhood: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       town_house: {
         type: Sequelize.STRING,
         allowNull: true,

@@ -7,6 +7,7 @@ class Property extends Model {
         name: Sequelize.STRING,
         price: Sequelize.INTEGER,
         address: Sequelize.STRING,
+        neighborhood: Sequelize.STRING,
         town_house: Sequelize.STRING,
         status: Sequelize.STRING,
         dimensions: Sequelize.STRING,
