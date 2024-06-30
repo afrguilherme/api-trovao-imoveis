@@ -1,7 +1,7 @@
 import { v4 } from 'uuid'
 import * as Yup from 'yup'
 
-import { isAdminOrOperator } from '../../middlewares/accesAuth'
+import { isAdminOrOperator, isAdmin } from '../../middlewares/accesAuth'
 
 import User from '../models/User'
 class UserController {
@@ -52,8 +52,10 @@ class UserController {
 
   async index(request, response) {
     try {
-      if (!(await isAdminOrOperator(request.userId))) {
-        return response.status(401).json()
+      if (!(await isAdmin(request.userId))) {
+        return response
+          .status(401)
+          .json({ error: 'Only administrators can list all users!' })
       }
 
       const users = await User.findAll()

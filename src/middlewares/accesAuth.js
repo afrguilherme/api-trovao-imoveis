@@ -10,3 +10,13 @@ export async function isAdminOrOperator(userId) {
 
   return true
 }
+
+export async function isAdmin(userId) {
+  const { admin: isAdmin } = await User.findByPk(userId)
+
+  if (!isAdmin) {
+    return false
+  }
+
+  return true
+}
