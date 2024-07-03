@@ -22,6 +22,7 @@ class PropertyController {
       bathrooms: Yup.number().required(),
       description: Yup.string().max(500),
       contact: Yup.string().required(),
+      offer: Yup.bool(),
     })
 
     if (!(await isAdminOrOperator(request.userId))) {
@@ -58,6 +59,7 @@ class PropertyController {
       bathrooms,
       description,
       contact,
+      offer,
     } = request.body
 
     try {
@@ -75,6 +77,7 @@ class PropertyController {
         bathrooms,
         description,
         contact,
+        offer,
         path: paths,
       })
 
@@ -99,6 +102,7 @@ class PropertyController {
       bathrooms: Yup.number(),
       description: Yup.string().max(500),
       contact: Yup.string(),
+      offer: Yup.bool(),
     })
 
     if (!(await isAdminOrOperator(request.userId))) {
@@ -133,6 +137,7 @@ class PropertyController {
       bathrooms,
       description,
       contact,
+      offer,
     } = request.body
 
     const updateData = {
@@ -149,6 +154,7 @@ class PropertyController {
       bathrooms,
       description,
       contact,
+      offer,
     }
 
     let filePaths = request.files.map((file) => file.filename)
