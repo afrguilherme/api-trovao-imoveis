@@ -8,13 +8,10 @@ import Property from '../app/models/Property'
 const accessAuth = async (userId, callback) => {
   try {
     const user = await User.findByPk(userId)
-
     if (!user) {
       return callback(new Error('User not found!'), false)
     }
-
     const { admin: isAdmin, operator: isOperator } = user
-
     if (!isAdmin && !isOperator) {
       return callback(new Error('Unauthorized!'), false)
     }

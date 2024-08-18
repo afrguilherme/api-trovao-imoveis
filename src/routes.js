@@ -54,6 +54,7 @@ routes.put(
 routes.put('/properties', (req, res) => {
   return res.status(400).json({ error: 'A category ID is required!' })
 })
+
 routes.delete('/properties/:id', validatePropertyId, PropertyController.delete)
 routes.delete('/properties', (req, res) => {
   return res.status(400).json({ error: 'A property ID is required!' })

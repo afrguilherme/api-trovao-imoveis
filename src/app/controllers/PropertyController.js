@@ -24,7 +24,6 @@ class PropertyController {
       contact: Yup.string().required(),
       offer: Yup.bool(),
     })
-
     if (!(await isAdminOrOperator(request.userId))) {
       return response.status(401).json()
     }
@@ -157,13 +156,17 @@ class PropertyController {
       offer,
     }
 
-    let filePaths = request.files.map((file) => file.filename)
+    const { files } = request
+
+    let filePaths = files.map((file) => file.filename)
     const uploadsPath = path.resolve('./uploads')
 
     try {
-      const files = await fs.readdir(uploadsPath)
+      const filesInDir = await fs.readdir(uploadsPath)
       const propertyImg = findProperty.path.map((img) => img)
-      const matchingImages = propertyImg.filter((img) => files.includes(img))
+      const matchingImages = propertyImg.filter((img) =>
+        filesInDir.includes(img),
+      )
 
       if (matchingImages.length > 0) {
         for (let img of matchingImages) {
@@ -171,7 +174,11 @@ class PropertyController {
         }
       }
 
-      updateData.path = filePaths
+      if (Array.isArray(files) && files.length <= 0) {
+        updateData.path = propertyImg
+      } else {
+        updateData.path = filePaths
+      }
     } catch (err) {
       return response.status(500).json({ error: `${err}` })
     }

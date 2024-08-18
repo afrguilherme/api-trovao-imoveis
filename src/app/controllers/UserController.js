@@ -30,7 +30,7 @@ class UserController {
 
     if (userExists) {
       return response
-        .status(400)
+        .status(409)
         .json({ error: 'User email already been used!' })
     }
 

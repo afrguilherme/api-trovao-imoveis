@@ -22,7 +22,7 @@ class Property extends Model {
           type: Sequelize.VIRTUAL,
           get() {
             const result = this.path.map((file) => {
-              return `http://localhost:3002/property-file/${file}`
+              return `http://localhost:3001/property-file/${file}`
             })
             return result
           },
