@@ -45,7 +45,7 @@ module.exports = {
         allowNull: false,
       },
       dimensions: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       rooms: {

@@ -10,7 +10,7 @@ class Property extends Model {
         neighborhood: Sequelize.STRING,
         town_house: Sequelize.STRING,
         status: Sequelize.STRING,
-        dimensions: Sequelize.STRING,
+        dimensions: Sequelize.INTEGER,
         rooms: Sequelize.INTEGER,
         parking_space: Sequelize.INTEGER,
         bathrooms: Sequelize.INTEGER,
