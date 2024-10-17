@@ -115,13 +115,13 @@ class PropertyController {
     }
 
     const { id } = request.params
-
     const findProperty = await Property.findByPk(id)
 
     if (!findProperty) {
       return response.status(404).json({ error: 'Property not found!' })
     }
 
+    const { files } = request // Pode ser undefined
     const {
       name,
       price,
@@ -156,38 +156,35 @@ class PropertyController {
       offer,
     }
 
-    const { files } = request
-
-    let filePaths = files.map((file) => file.filename)
     const uploadsPath = path.resolve('./uploads')
+    const existingImages = findProperty.path || [] // Imagens atuais no banco
 
     try {
-      const filesInDir = await fs.readdir(uploadsPath)
-      const propertyImg = findProperty.path.map((img) => img)
-      const matchingImages = propertyImg.filter((img) =>
-        filesInDir.includes(img),
-      )
+      // Se `files` for undefined ou vazio, mantém as imagens existentes
+      if (!Array.isArray(files) || files.length === 0) {
+        updateData.path = existingImages
+      } else {
+        // Se houver upload de novas imagens, substitui as antigas
+        const newFilePaths = files.map((file) => file.filename)
 
-      if (matchingImages.length > 0) {
+        // Excluir apenas as imagens que estão no diretório e no registro
+        const filesInDir = await fs.readdir(uploadsPath)
+        const matchingImages = existingImages.filter((img) =>
+          filesInDir.includes(img),
+        )
+
         for (let img of matchingImages) {
           await fs.unlink(path.join(uploadsPath, img))
         }
-      }
 
-      if (Array.isArray(files) && files.length <= 0) {
-        updateData.path = propertyImg
-      } else {
-        updateData.path = filePaths
+        updateData.path = newFilePaths
       }
     } catch (err) {
       return response.status(500).json({ error: `${err}` })
     }
 
     try {
-      await Property.update(updateData, {
-        where: { id },
-      })
-
+      await Property.update(updateData, { where: { id } })
       return response
         .status(200)
         .json({ message: 'Property data updated successfully!' })
