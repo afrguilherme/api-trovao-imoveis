@@ -8,38 +8,16 @@ import { isAdminOrOperator } from '../../middlewares/accesAuth'
 
 class PropertyController {
   async store(request, response) {
-    const schema = Yup.object({
-      name: Yup.string().required(),
-      price: Yup.number(),
-      category_id: Yup.number().required(),
-      address: Yup.string().required(),
-      neighborhood: Yup.string().required(),
-      town_house: Yup.string(),
-      status: Yup.string().required(),
-      dimensions: Yup.number().required(),
-      rooms: Yup.number().required(),
-      parking_space: Yup.number().required(),
-      bathrooms: Yup.number().required(),
-      description: Yup.string().max(500),
-      contact: Yup.string().required(),
-      offer: Yup.bool(),
-    })
     if (!(await isAdminOrOperator(request.userId))) {
       return response.status(401).json()
     }
 
-    try {
-      schema.validateSync(request.body, { abortEarly: false })
-    } catch (err) {
-      return response.status(400).json({ error: err.errors })
-    }
-
     const { files } = request
 
-    if (!files || files.length < 5 || files.length > 10) {
+    if (!files) {
       return response
         .status(400)
-        .json({ error: 'Between 5 and 10 images are required!' })
+        .json({ error: 'At least 1 image is required!' })
     }
 
     const paths = request.files.map((file) => file.filename)

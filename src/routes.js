@@ -7,10 +7,7 @@ import PropertyController from './app/controllers/PropertyController'
 import CategoryController from './app/controllers/CategoryController'
 
 import authMiddleware from './middlewares/auth'
-import {
-  validateImageCount,
-  handleMulterError,
-} from './middlewares/handleMulterErrors'
+import { handleMulterError } from './middlewares/handleMulterErrors'
 import { checkPropertyExists } from './middlewares/checkPropertyExists'
 import {
   validateCategoryId,
@@ -38,7 +35,6 @@ routes.post(
   '/properties',
   upload.array('files', 10),
   handleMulterError,
-  validateImageCount,
   PropertyController.store,
 )
 
@@ -46,7 +42,6 @@ routes.put(
   '/properties/:id',
   checkPropertyExists,
   upload.array('files', 10),
-  validateImageCount,
   handleMulterError,
   PropertyController.update,
 )

@@ -1,9 +1,11 @@
 import multer from 'multer'
 import { v4 } from 'uuid'
 import { extname, resolve } from 'node:path'
+import * as Yup from 'yup'
 
 import User from '../app/models/User'
 import Property from '../app/models/Property'
+import Category from '../app/models/Category'
 
 const accessAuth = async (userId, callback) => {
   try {
@@ -21,12 +23,33 @@ const accessAuth = async (userId, callback) => {
   }
 }
 
+const schema = Yup.object({
+  name: Yup.string().required(),
+  price: Yup.number(),
+  category_id: Yup.number().required(),
+  address: Yup.string().required(),
+  neighborhood: Yup.string().required(),
+  town_house: Yup.string(),
+  status: Yup.string().required(),
+  dimensions: Yup.number().required(),
+  rooms: Yup.number().required(),
+  parking_space: Yup.number().required(),
+  bathrooms: Yup.number().required(),
+  description: Yup.string().max(500),
+  contact: Yup.string().required(),
+  offer: Yup.bool(),
+})
+
 export default {
   storage: multer.diskStorage({
     destination: resolve(__dirname, '..', '..', 'uploads'),
     filename: (request, file, callback) =>
       callback(null, v4() + extname(file.originalname)),
   }),
+
+  limits: {
+    files: 10,
+  },
 
   fileFilter: async (request, file, callback) => {
     accessAuth(request.userId, (authError, authResult) => {
@@ -36,13 +59,38 @@ export default {
     })
 
     const { id } = request.params
+    const { category_id } = request.body
+
+    try {
+      const category = await Category.findByPk(category_id)
+
+      if (!category) {
+        throw new Error('Category not found!')
+      }
+    } catch (error) {
+      return callback(
+        error.message === 'Category not found!'
+          ? error
+          : new Error('System error, try again later!'),
+        false,
+      )
+    }
 
     if (id) {
       const property = await Property.findByPk(id)
 
       if (!property) {
-        return callback(new Error('property not found!'))
+        return callback(new Error('Property not found!'))
       }
+    }
+
+    try {
+      schema.validateSync(request.body, { abortEarly: false })
+    } catch (validationError) {
+      return callback(
+        new Error(`Validation error: ${validationError.errors.join(', ')}`),
+        false,
+      )
     }
 
     const allowedMimes = [
