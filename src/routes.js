@@ -22,7 +22,7 @@ routes.post('/users', UserController.store)
 routes.post('/session', SessionController.store)
 routes.get('/properties', PropertyController.index)
 routes.get('/categories', CategoryController.index)
-routes.use(authMiddleware) // Indica que as rotas abaixo desta linha utiliza a autenticação de token.
+routes.use(authMiddleware) // Indica que as rotas abaixo desta linha utilizam a autenticação de token.
 routes.get('/users', UserController.index)
 
 routes.put('/categories/:id', validateCategoryId, CategoryController.update)

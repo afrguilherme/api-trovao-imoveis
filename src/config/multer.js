@@ -40,6 +40,23 @@ const schema = Yup.object({
   offer: Yup.bool(),
 })
 
+const updateSchema = Yup.object({
+  name: Yup.string(),
+  price: Yup.string(),
+  category_id: Yup.number(),
+  address: Yup.string(),
+  neighborhood: Yup.string(),
+  town_house: Yup.string(),
+  status: Yup.string(),
+  dimensions: Yup.number(),
+  rooms: Yup.number(),
+  parking_space: Yup.number(),
+  bathrooms: Yup.number(),
+  description: Yup.string().max(500),
+  contact: Yup.string(),
+  offer: Yup.bool(),
+})
+
 export default {
   storage: multer.diskStorage({
     destination: resolve(__dirname, '..', '..', 'uploads'),
@@ -77,20 +94,26 @@ export default {
     }
 
     if (id) {
+      try {
+        updateSchema.validateSync(request.body, { abortEarly: false })
+      } catch (err) {
+        return response.status(400).json({ error: err.errors })
+      }
+
       const property = await Property.findByPk(id)
 
       if (!property) {
         return callback(new Error('Property not found!'))
       }
-    }
-
-    try {
-      schema.validateSync(request.body, { abortEarly: false })
-    } catch (validationError) {
-      return callback(
-        new Error(`Validation error: ${validationError.errors.join(', ')}`),
-        false,
-      )
+    } else {
+      try {
+        schema.validateSync(request.body, { abortEarly: false })
+      } catch (validationError) {
+        return callback(
+          new Error(`Validation error: ${validationError.errors.join(', ')}`),
+          false,
+        )
+      }
     }
 
     const allowedMimes = [

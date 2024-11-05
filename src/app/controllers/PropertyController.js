@@ -65,31 +65,8 @@ class PropertyController {
   }
 
   async update(request, response) {
-    const schema = Yup.object({
-      name: Yup.string(),
-      price: Yup.string(),
-      category_id: Yup.number(),
-      address: Yup.string(),
-      neighborhood: Yup.string(),
-      town_house: Yup.string(),
-      status: Yup.string(),
-      dimensions: Yup.number(),
-      rooms: Yup.number(),
-      parking_space: Yup.number(),
-      bathrooms: Yup.number(),
-      description: Yup.string().max(500),
-      contact: Yup.string(),
-      offer: Yup.bool(),
-    })
-
     if (!(await isAdminOrOperator(request.userId))) {
       return response.status(401).json()
-    }
-
-    try {
-      schema.validateSync(request.body, { abortEarly: false })
-    } catch (err) {
-      return response.status(400).json({ error: err.errors })
     }
 
     const { id } = request.params
