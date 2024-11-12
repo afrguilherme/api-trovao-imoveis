@@ -24,6 +24,7 @@ routes.get('/properties', PropertyController.index)
 routes.get('/categories', CategoryController.index)
 routes.use(authMiddleware) // Indica que as rotas abaixo desta linha utilizam a autenticação de token.
 routes.get('/users', UserController.index)
+routes.get('/properties/:id', PropertyController.show)
 
 routes.put('/categories/:id', validateCategoryId, CategoryController.update)
 routes.delete('/categories/:id', validateCategoryId, CategoryController.delete)

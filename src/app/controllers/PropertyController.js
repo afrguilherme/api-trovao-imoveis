@@ -207,6 +207,32 @@ class PropertyController {
 
     return response.json(properties)
   }
+
+  async show(request, response) {
+    const { id } = request.params
+
+    try {
+      const property = await Property.findByPk(id, {
+        include: [
+          {
+            model: Category,
+            as: 'category',
+            attributes: ['id', 'name'],
+          },
+        ],
+      })
+
+      if (!property) {
+        return response.status(404).json({ error: 'Property not found!' })
+      }
+
+      return response.status(200).json(property)
+    } catch (error) {
+      return response
+        .status(500)
+        .json({ error: 'Failed to retrieve property.' })
+    }
+  }
 }
 
 export default new PropertyController()
