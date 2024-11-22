@@ -207,7 +207,7 @@ class PropertyController {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'email'],
+          attributes: ['id', 'email', 'name'],
         },
       ],
     })
@@ -229,7 +229,7 @@ class PropertyController {
           {
             model: User,
             as: 'user',
-            attributes: ['id', 'email'],
+            attributes: ['id', 'email', 'name'],
           },
         ],
       })
