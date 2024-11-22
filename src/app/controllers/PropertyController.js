@@ -3,6 +3,7 @@ const path = require('path')
 import * as Yup from 'yup'
 import Property from '../models/Property'
 import Category from '../models/Category'
+import User from '../models/User'
 
 import { isAdminOrOperator } from '../../middlewares/accesAuth'
 
@@ -56,6 +57,7 @@ class PropertyController {
         contact,
         offer,
         path: paths,
+        user_id: request.userId,
       })
 
       return response.status(201).json(property)
@@ -202,6 +204,11 @@ class PropertyController {
           as: 'category',
           attributes: ['id', 'name'],
         },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'email'],
+        },
       ],
     })
 
@@ -218,6 +225,11 @@ class PropertyController {
             model: Category,
             as: 'category',
             attributes: ['id', 'name'],
+          },
+          {
+            model: User,
+            as: 'user',
+            attributes: ['id', 'email'],
           },
         ],
       })
